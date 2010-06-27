@@ -1,0 +1,52 @@
+#!/usr/bin/python
+
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author: Mariano Simone (marianosimone@gmail.com)
+# Version: 1.0
+# Name: epub-thumbnailer
+# Description: An implementation of a cover thumbnailer for epub files
+# Installation: see README
+
+import zipfile
+import sys
+import Image
+import shutil
+import os
+
+# Which file are we working with?
+input_file = sys.argv[1]
+# Where do does the file have to be saved?
+output_file = sys.argv[2]
+# Required size?
+size = sys.argv[3]
+
+# An epub is just a zip
+file = zipfile.ZipFile(input_file, "r")
+
+# Just some examples of what I found inside my epubs...
+possible_paths = ["OPS/images/cover.png","OPS/images/cover.jpg","OPS/cover.png","OPS/cover.jpg"]
+
+for path in possible_paths:
+  try:
+    file.extract(path, "/tmp")
+    im = Image.open(os.path.join("/tmp", path))
+    im.thumbnail((size, size), Image.ANTIALIAS)
+    im.save(output_file, "PNG")
+    shutil.rmtree(os.path.join("/tmp",path.split("/")[0]))
+    exit(0)
+  except Exception as ex:
+    print "Couldn't make thumbnail using: ", path, ex
+
+exit(1)

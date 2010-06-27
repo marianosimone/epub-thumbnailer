@@ -1,0 +1,15 @@
+What?
+epub-thumbnailer is a simple script that tries to find a cover into an epub file and creates a thumbnail for it.
+
+Why?
+Because I want nautilus to display nice thumnails for my epub ebooks, as it does for pdf files
+
+How to install?
+1. Copy epub-thumbnailer.schemas to /usr/share/gconf/schemas/
+sudo cp epub-thumbnailer /usr/share/gconf/schemas/
+
+2. Install the schema
+gconftool-2 --install-schema-file /usr/share/gconf/schemas/epub-thumbnailer
+
+3. Restart nautilus
+killall -9 nautilus && nautilus
