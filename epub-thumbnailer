@@ -33,7 +33,7 @@ output_file = sys.argv[2]
 size = sys.argv[3]
 
 # An epub is just a zip
-file = zipfile.ZipFile(input_file, "r")
+epub = zipfile.ZipFile(input_file, "r")
 
 # Part of itertools since Python2.6, but let's be nice with old versions
 # Taken from: http://docs.python.org/library/itertools.html#itertools.product
@@ -48,20 +48,23 @@ def product(*args, **kwds):
         yield tuple(prod)
 
 # Just some examples of what I found inside my epubs...
-possible_dirs = ["OPS/images", "OPS", "OEBPS/images"]
+possible_dirs = ["", "OPS/images/", "OPS/", "OEBPS/images/"]
 possible_filenames = ["cover", "cover_fmt", "front_cover"]
 possible_extensions = ["jpg", "png"]
 
 combined_paths = product(possible_dirs, possible_filenames, possible_extensions)
-possible_paths = map(lambda tup : "%s/%s.%s" % (tup[0], tup[1], tup[2]), combined_paths)
+possible_paths = map(lambda tup : "%s%s.%s" % (tup[0], tup[1], tup[2]), combined_paths)
 
 for path in possible_paths:
   try:
-    file.extract(path, "/tmp")
+    epub.extract(path, "/tmp")
     im = Image.open(os.path.join("/tmp", path))
     im.thumbnail((size, size), Image.ANTIALIAS)
     im.save(output_file, "PNG")
-    shutil.rmtree(os.path.join("/tmp",path.split("/")[0]))
+    if "/" in path: # cover was inside a dir
+        shutil.rmtree(os.path.join("/tmp", path.split("/")[0]))
+    else: # or just in the epub's root
+        os.remove(os.path.join("/tmp",path))
     exit(0)
   except Exception as ex:
     print "Couldn't make thumbnail using: ", path, ex
