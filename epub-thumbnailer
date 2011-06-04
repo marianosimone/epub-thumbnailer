@@ -24,6 +24,7 @@ import sys
 import Image
 import shutil
 import os
+from itertools import product # Python >= 2.6 required
 
 # Which file are we working with?
 input_file = sys.argv[1]
@@ -34,18 +35,6 @@ size = sys.argv[3]
 
 # An epub is just a zip
 epub = zipfile.ZipFile(input_file, "r")
-
-# Part of itertools since Python2.6, but let's be nice with old versions
-# Taken from: http://docs.python.org/library/itertools.html#itertools.product
-def product(*args, **kwds):
-    # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
-    # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
-    pools = map(tuple, args) * kwds.get('repeat', 1)
-    result = [[]]
-    for pool in pools:
-        result = [x+[y] for x in result for y in pool]
-    for prod in result:
-        yield tuple(prod)
 
 # Just some examples of what I found inside my epubs...
 possible_dirs = ["", "OPS/images/", "OPS/", "OEBPS/images/"]
