@@ -12,10 +12,10 @@ chmod +x epub-thumbnailer
 sudo cp epub-thumbnailer /usr/bin
 
 3. Copy epub-thumbnailer.schemas to /usr/share/gconf/schemas/
-sudo cp epub-thumbnailer /usr/share/gconf/schemas/
+sudo cp epub-thumbnailer.schemas /usr/share/gconf/schemas/
 
 4. Install the schema
-gconftool-2 --install-schema-file /usr/share/gconf/schemas/epub-thumbnailer
+gconftool-2 --install-schema-file /usr/share/gconf/schemas/epub-thumbnailer.schemas
 
 5. Restart nautilus
 killall -9 nautilus && nautilus
