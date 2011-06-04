@@ -35,8 +35,25 @@ size = sys.argv[3]
 # An epub is just a zip
 file = zipfile.ZipFile(input_file, "r")
 
+# Part of itertools since Python2.6, but let's be nice with old versions
+# Taken from: http://docs.python.org/library/itertools.html#itertools.product
+def product(*args, **kwds):
+    # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
+    # product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
+    pools = map(tuple, args) * kwds.get('repeat', 1)
+    result = [[]]
+    for pool in pools:
+        result = [x+[y] for x in result for y in pool]
+    for prod in result:
+        yield tuple(prod)
+
 # Just some examples of what I found inside my epubs...
-possible_paths = ["OPS/images/cover.png","OPS/images/cover.jpg","OPS/cover.png","OPS/cover.jpg"]
+possible_dirs = ["OPS/images", "OPS", "OEBPS/images"]
+possible_filenames = ["cover", "cover_fmt", "front_cover"]
+possible_extensions = ["jpg", "png"]
+
+combined_paths = product(possible_dirs, possible_filenames, possible_extensions)
+possible_paths = map(lambda tup : "%s/%s.%s" % (tup[0], tup[1], tup[2]), combined_paths)
 
 for path in possible_paths:
   try:
