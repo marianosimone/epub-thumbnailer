@@ -37,25 +37,24 @@ size = sys.argv[3]
 epub = zipfile.ZipFile(input_file, "r")
 
 # Just some examples of what I found inside my epubs...
-possible_dirs = ["", "OPS/images/", "OPS/", "OEBPS/images/"]
 possible_filenames = ["cover", "cover_fmt", "front_cover"]
 possible_extensions = ["jpg", "png"]
+possible_cover_files = map(lambda t : "%s.%s" % t, product(possible_filenames, possible_extensions))
 
-combined_paths = product(possible_dirs, possible_filenames, possible_extensions)
-possible_paths = map(lambda tup : "%s%s.%s" % (tup[0], tup[1], tup[2]), combined_paths)
-
-for path in possible_paths:
-  try:
-    epub.extract(path, "/tmp")
-    im = Image.open(os.path.join("/tmp", path))
-    im.thumbnail((size, size), Image.ANTIALIAS)
-    im.save(output_file, "PNG")
-    if "/" in path: # cover was inside a dir
-        shutil.rmtree(os.path.join("/tmp", path.split("/")[0]))
-    else: # or just in the epub's root
-        os.remove(os.path.join("/tmp",path))
-    exit(0)
-  except Exception as ex:
-    print "Couldn't make thumbnail using: ", path, ex
+for fileinfo in epub.filelist:
+    try:
+        if os.path.basename(fileinfo.filename) in possible_cover_files:
+            epub.extract(fileinfo, "/tmp")
+            tmp_cover_path = os.path.join("/tmp", fileinfo.filename)
+            im = Image.open(tmp_cover_path)
+            im.thumbnail((size, size), Image.ANTIALIAS)
+            im.save(output_file, "PNG")
+            if "/" in fileinfo.filename: # cover was inside a dir
+                shutil.rmtree(os.path.join("/tmp", fileinfo.filename.split("/")[0]))
+            else: # or just in the epub's root
+                os.remove(tmp_cover_path)
+            exit(0)
+    except Exception as ex:
+        print "Couldn't make thumbnail using: ", fileinfo.filename, ex
 
 exit(1)
