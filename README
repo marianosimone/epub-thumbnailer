@@ -21,4 +21,4 @@ gconftool-2 --install-schema-file /usr/share/gconf/schemas/epub-thumbnailer.sche
 killall -9 nautilus && nautilus
 
 More info
-See http://0pointer.com.ar/epub-thumbnailer
+See http://marianosimone.com.ar/epub-thumbnailer
