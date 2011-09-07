@@ -38,7 +38,7 @@ epub = zipfile.ZipFile(input_file, "r")
 
 # Just some examples of what I found inside my epubs...
 # FIXME: Still can find some false positives. Maybe we can get all, and rank solutions
-cover_regex = re.compile(".*cover.*\.(jpg|png)")
+cover_regex = re.compile(".*cover.*\.(jpg|jpeg|png)")
 
 for fileinfo in epub.filelist:
     try:
