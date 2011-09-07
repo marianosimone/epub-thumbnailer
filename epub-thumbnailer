@@ -24,26 +24,25 @@ import sys
 import Image
 import shutil
 import os
-from itertools import product # Python >= 2.6 required
+import re
 
 # Which file are we working with?
 input_file = sys.argv[1]
 # Where do does the file have to be saved?
 output_file = sys.argv[2]
 # Required size?
-size = sys.argv[3]
+size = int(sys.argv[3])
 
 # An epub is just a zip
 epub = zipfile.ZipFile(input_file, "r")
 
 # Just some examples of what I found inside my epubs...
-possible_filenames = ["cover", "cover_fmt", "front_cover"]
-possible_extensions = ["jpg", "png"]
-possible_cover_files = map(lambda t : "%s.%s" % t, product(possible_filenames, possible_extensions))
+# FIXME: Still can find some false positives. Maybe we can get all, and rank solutions
+cover_regex = re.compile(".*cover.*\.(jpg|png)")
 
 for fileinfo in epub.filelist:
     try:
-        if os.path.basename(fileinfo.filename).lower() in possible_cover_files:
+        if cover_regex.match(os.path.basename(fileinfo.filename).lower()):
             epub.extract(fileinfo, "/tmp")
             tmp_cover_path = os.path.join("/tmp", fileinfo.filename)
             im = Image.open(tmp_cover_path)
