@@ -43,7 +43,7 @@ possible_cover_files = map(lambda t : "%s.%s" % t, product(possible_filenames, p
 
 for fileinfo in epub.filelist:
     try:
-        if os.path.basename(fileinfo.filename) in possible_cover_files:
+        if os.path.basename(fileinfo.filename).lower() in possible_cover_files:
             epub.extract(fileinfo, "/tmp")
             tmp_cover_path = os.path.join("/tmp", fileinfo.filename)
             im = Image.open(tmp_cover_path)
