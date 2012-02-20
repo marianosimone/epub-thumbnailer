@@ -30,4 +30,4 @@ See http://marianosimone.com.ar/epub-thumbnailer
 
 # Acknowledgments
 - [Marcelo Lira](https://github.com/setanta): Improved cover detection by filename
-- Pablo Jorge: Added manifest-based cover detection
+- [Pablo Jorge](https://github.com/pablojorge): Added manifest-based cover detection
