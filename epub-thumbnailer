@@ -22,9 +22,55 @@
 import zipfile
 import sys
 import Image
-import shutil
 import os
 import re
+from xml.dom import minidom
+from StringIO import StringIO
+
+def get_cover_from_manifest(epub):
+    img_ext_regex = re.compile("^.*\.(jpg|jpeg|png)$")
+
+    # open the main container
+    container = epub.open("META-INF/container.xml")
+    container_root = minidom.parseString(container.read())
+
+    # locate the rootfile
+    elem = container_root.getElementsByTagName("rootfile")[0]
+    rootfile_path = elem.getAttribute("full-path")
+
+    # open the rootfile
+    rootfile = epub.open(rootfile_path)
+    rootfile_root = minidom.parseString(rootfile.read())
+
+    # find the manifest element
+    manifest = rootfile_root.getElementsByTagName("manifest")[0]
+    for item in manifest.getElementsByTagName("item"):
+        item_id = item.getAttribute("id")
+        item_href = item.getAttribute("href")
+        if "cover" in item_id and img_ext_regex.match(item_href.lower()):
+            cover_path = os.path.join(os.path.dirname(rootfile_path), 
+                                      item_href)
+            return cover_path
+
+    return None
+
+def get_cover_by_filename(epub):
+    cover_regex = re.compile(".*cover.*\.(jpg|jpeg|png)")
+
+    for fileinfo in epub.filelist:
+        if cover_regex.match(os.path.basename(fileinfo.filename).lower()):
+            return fileinfo.filename
+
+    return None
+
+def extract_cover(cover_path):
+    if cover_path:
+        cover = epub.open(cover_path)
+        im = Image.open(StringIO(cover.read()))
+        im.thumbnail((size, size), Image.ANTIALIAS)
+        im.save(output_file, "PNG")
+        return True
+    return False
 
 # Which file are we working with?
 input_file = sys.argv[1]
@@ -36,24 +82,15 @@ size = int(sys.argv[3])
 # An epub is just a zip
 epub = zipfile.ZipFile(input_file, "r")
 
-# Just some examples of what I found inside my epubs...
-# FIXME: Still can find some false positives. Maybe we can get all, and rank solutions
-cover_regex = re.compile(".*cover.*\.(jpg|jpeg|png)")
+extraction_strategies = [get_cover_from_manifest, get_cover_by_filename]
 
-for fileinfo in epub.filelist:
+for strategy in extraction_strategies:
     try:
-        if cover_regex.match(os.path.basename(fileinfo.filename).lower()):
-            epub.extract(fileinfo, "/tmp")
-            tmp_cover_path = os.path.join("/tmp", fileinfo.filename)
-            im = Image.open(tmp_cover_path)
-            im.thumbnail((size, size), Image.ANTIALIAS)
-            im.save(output_file, "PNG")
-            if "/" in fileinfo.filename: # cover was inside a dir
-                shutil.rmtree(os.path.join("/tmp", fileinfo.filename.split("/")[0]))
-            else: # or just in the epub's root
-                os.remove(tmp_cover_path)
-            exit(0)
+        cover_path = strategy(epub)
+        if extract_cover(cover_path):
+            break
     except Exception as ex:
-        print "Couldn't make thumbnail using: ", fileinfo.filename, ex
+        print "Error getting cover using %s: " % strategy.__name__, ex
 
 exit(1)
+
