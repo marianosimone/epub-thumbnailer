@@ -38,3 +38,4 @@ See http://marianosimone.com.ar/epub-thumbnailer
 # Acknowledgments
 - [Marcelo Lira](https://github.com/setanta): Improved cover detection by filename
 - [Pablo Jorge](https://github.com/pablojorge): Added manifest-based cover detection
+- [Renato Ramonda](https://github.com/renatoram): Added gnome3 thumbnailer support
