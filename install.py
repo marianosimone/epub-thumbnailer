@@ -83,43 +83,82 @@ def check_dependencies():
         sys.exit(1)
     print
 
-# ---------------------------------------------------------------------------
-# Parse the command line.
-# ---------------------------------------------------------------------------
-try:
-    opts, command = getopt.gnu_getopt(sys.argv[1:], '', [])
-except getopt.GetoptError, err:
-    print str(err)
-    info()
+def check_gnome_version():
+    """
+    Checks for the installed gnome version.
+    Returns: "gnome2" or "gnome3"
+    """
+    (stdin, stdout) = os.popen2("gnome-session --version")
+    version = stdout.read().split()[1]
+    if version[0] == '3':
+        return "gnome3"
+    elif version[0] == '2':
+        return "gnome2"
+    else:
+        return None
+    
 
-# ---------------------------------------------------------------------------
-# Install epub-thumbnailer.
-# ---------------------------------------------------------------------------
-if command == ['install']:
-    check_dependencies()
-    print 'Installing epub-thumbnailer to', install_dir, '...\n'
-    if not os.access(install_dir, os.W_OK):
-        print 'You do not have write permissions to', install_dir
-        sys.exit(1)
-    for afile in FILES:
-        install(afile[0], afile[1])
+if __name__ == '__main__':
+    # ---------------------------------------------------------------------------
+    # Parse the command line.
+    # ---------------------------------------------------------------------------
+    try:
+        opts, command = getopt.gnu_getopt(sys.argv[1:], '', [])
+    except getopt.GetoptError, err:
+        print str(err)
+        info()
 
-    schema = os.path.join(source_dir, 'epub-thumbnailer.schemas')
-    os.popen('GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source) '
-                 'gconftool-2 --makefile-install-rule "%s" 2>/dev/null' %
-                    schema)
-    print '\nRegistered epub archive thumbnailer in gconf (if available).'
-    print 'The thumbnailer is only supported by some file managers,',
-    print 'such as Nautilus'
-    print 'and Thunar.'
-    print 'You might have to restart the file manager for the thumbnailer',
-    print 'to be activated.'
-# ---------------------------------------------------------------------------
-# Uninstall epub-thumbnailer.
-# ---------------------------------------------------------------------------
-elif command == ['uninstall']:
-    print 'Uninstalling epub-thumbnailer from', install_dir, '...\n'
-    uninstall('epub-thumbnailer')
-else:
-    info()
+    # ---------------------------------------------------------------------------
+    # Install epub-thumbnailer.
+    # ---------------------------------------------------------------------------
+    if command == ['install']:
+        check_dependencies()
+        print 'Installing epub-thumbnailer to', install_dir, '...\n'
+        if not os.access(install_dir, os.W_OK):
+            print 'You do not have write permissions to', install_dir
+            sys.exit(1)
+        for afile in FILES:
+            install(afile[0], afile[1])
+
+        version = check_gnome_version()
+
+        if version == "gnome2":
+            schema = os.path.join(source_dir, 'epub-thumbnailer.schemas')
+            os.popen('GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source) '
+                         'gconftool-2 --makefile-install-rule "%s" 2>/dev/null' %
+                            schema)
+            print '\nRegistered epub archive thumbnailer in gconf (if available).'
+            print 'The thumbnailer is only supported by some file managers,',
+            print 'such as Nautilus'
+            print 'and Thunar.'
+            print 'You might have to restart the file manager for the thumbnailer',
+            print 'to be activated.\n'
+        elif version == "gnome3":
+            install('epub.thumbnailer', '/usr/share/thumbnailers/')
+            print '\nInstalled the thumbnailer hook in /usr/share/thumbnailers/'
+            print 'You might have to restart your file manager for the thumbnailer',
+            print 'to be activated.\n'
+        else:
+            print "\nCould not determine your Gnome version. You can still use"
+            print "The thumbnailer script 'epub-thumbnailer' manually."
+            print ""
+            print "For example:"
+            print ""
+            print "    epub-thumbnailer Lawrence\ Lessig\ -\ Free\ Culture.epub cover.png 128"
+    # ---------------------------------------------------------------------------
+    # Uninstall epub-thumbnailer.
+    # ---------------------------------------------------------------------------
+    elif command == ['uninstall']:
+        version = check_gnome_version()
+        print 'Uninstalling epub-thumbnailer from', install_dir, '...\n'
+        uninstall('epub-thumbnailer')
+        if version == "gnome3":
+            print 'Uninstalling epub.thumbnailer from /usr/share/thumbnailers/ ...\n'
+            try:
+                os.remove("/usr/share/thumbnailers/epub.thumbnailer")
+                print "Removed /usr/share/thumbnailers/epub.thumbnailer"
+            except:
+                print("Could not remove /usr/share/thumbnailers/epub.thumbnailer")
+    else:
+        info()
 
