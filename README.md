@@ -2,38 +2,20 @@
 epub-thumbnailer is a simple script that tries to find a cover into an epub file and creates a thumbnail for it.
 
 # Why?
-Because I want nautilus to display nice thumnails for my epub ebooks, as it does for pdf files
+Because I want my file manager (Nautilus, Thunar, Caja, et al.) to display nice thumnails for my epub ebooks, as it does for pdf files or images
 
 # How to install?
-Make sure epub-thumbnailer is executable
 
-    chmod +x epub-thumbnailer
+Run the installer!
 
-Copy epub-thumbnailer to /usr/bin
+    sudo python install.py install
 
-    sudo cp epub-thumbnailer /usr/bin
+Basically, it moves the thumbnailer script to /usr/bin and installs the necessary hooks:
 
-# If you are running gnome2
-Copy epub-thumbnailer.schemas to /usr/share/gconf/schemas/
+- In gnome2, using a gconf schema (check src/epub-thumbnailer.schemas)
+- In gnome3, using a thumbnailer entry (check src/epub.thumbnailer)
 
-    sudo cp epub-thumbnailer.schemas /usr/share/gconf/schemas/
-
-Install the schema
-
-    gconftool-2 --install-schema-file /usr/share/gconf/schemas/epub-thumbnailer.schemas
-
-# If you are running gnome3 (aka gnome-shell)
-Copy epub.thumbnailer to /usr/share/thumbnailers
-
-    sudo cp epub.thumbnailer /usr/share/thumbnailers/
-
-# To complete the installation
-Restart nautilus
-
-    nautilus -q && nautilus
-
-# More info
-See http://marianosimone.com.ar/epub-thumbnailer
+After installation, you might need to restart your file manager and remove cached thumbnails (~/.cache/thumbnails)
 
 # Acknowledgments
 - [Marcelo Lira](https://github.com/setanta): Improved cover detection by filename
