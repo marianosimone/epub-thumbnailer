@@ -58,10 +58,18 @@ def get_cover_from_manifest(epub):
 
 def get_cover_by_filename(epub):
     cover_regex = re.compile('.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
+    no_matching_images = []
     for fileinfo in epub.filelist:
         filename = os.path.basename(fileinfo.filename)
         if cover_regex.match(fileinfo.filename):
             return filename
+        if img_ext_regex.match(filename):
+            no_matching_images.append(fileinfo)
+    return _choose_best_image(no_matching_images)
+
+def _choose_best_image(images):
+    if images:
+        return max(images, key=lambda f: f.file_size)
     return None
 
 def extract_cover(cover_path):
