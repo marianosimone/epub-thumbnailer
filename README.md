@@ -4,6 +4,8 @@ epub-thumbnailer is a simple script that tries to find a cover into an epub file
 # Why?
 Because I want my file manager (Nautilus, Thunar, Caja, et al.) to display nice thumnails for my epub ebooks, as it does for pdf files or images
 
+![screenshot](screenshot.png)
+
 # How to install?
 
 Run the installer!
