@@ -27,8 +27,10 @@ import re
 from xml.dom import minidom
 from StringIO import StringIO
 
+
+img_ext_regex = re.compile('^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)
+
 def get_cover_from_manifest(epub):
-    img_ext_regex = re.compile("^.*\.(jpg|jpeg|png)$")
 
     # open the main container
     container = epub.open("META-INF/container.xml")
@@ -55,12 +57,11 @@ def get_cover_from_manifest(epub):
     return None
 
 def get_cover_by_filename(epub):
-    cover_regex = re.compile(".*cover.*\.(jpg|jpeg|png)")
-
+    cover_regex = re.compile('.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
     for fileinfo in epub.filelist:
-        if cover_regex.match(os.path.basename(fileinfo.filename).lower()):
-            return fileinfo.filename
-
+        filename = os.path.basename(fileinfo.filename)
+        if cover_regex.match(fileinfo.filename):
+            return filename
     return None
 
 def extract_cover(cover_path):
@@ -93,4 +94,3 @@ for strategy in extraction_strategies:
         print "Error getting cover using %s: " % strategy.__name__, ex
 
 exit(1)
-
