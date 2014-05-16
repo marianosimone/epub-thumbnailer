@@ -25,7 +25,7 @@ After installation, you might need to restart your file manager and remove cache
 
 # Stand-alone
 
-This will look into the **epub_file** to find its cover, and will save a **size**px png file as **output_file**
+This will look into the **epub_file** to find its cover, and will save a **size** px png file as **output_file**
 
     epub-thumbnailer <epub_file> <output_file> <size>
 
