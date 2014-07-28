@@ -77,6 +77,8 @@ def extract_cover(cover_path):
         cover = epub.open(cover_path)
         im = Image.open(StringIO(cover.read()))
         im.thumbnail((size, size), Image.ANTIALIAS)
+        if im.mode == "CMYK":
+            im = im.convert("RGB")
         im.save(output_file, "PNG")
         return True
     return False
