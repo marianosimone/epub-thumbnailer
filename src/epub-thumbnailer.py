@@ -50,7 +50,7 @@ def get_cover_from_manifest(epub):
         item_id = item.getAttribute("id")
         item_href = item.getAttribute("href")
         if "cover" in item_id and img_ext_regex.match(item_href.lower()):
-            cover_path = os.path.join(os.path.dirname(rootfile_path), 
+            cover_path = os.path.join(os.path.dirname(rootfile_path),
                                       item_href)
             return cover_path
 
@@ -62,7 +62,7 @@ def get_cover_by_filename(epub):
     for fileinfo in epub.filelist:
         filename = os.path.basename(fileinfo.filename)
         if cover_regex.match(fileinfo.filename):
-            return filename
+            return fileinfo.filename # send full path
         if img_ext_regex.match(filename):
             no_matching_images.append(fileinfo)
     return _choose_best_image(no_matching_images)
