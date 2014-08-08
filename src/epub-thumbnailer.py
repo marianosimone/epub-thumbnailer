@@ -29,6 +29,7 @@ from StringIO import StringIO
 
 
 img_ext_regex = re.compile('^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)
+cover_regex = re.compile('.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
 
 def get_cover_from_manifest(epub):
 
@@ -57,13 +58,11 @@ def get_cover_from_manifest(epub):
     return None
 
 def get_cover_by_filename(epub):
-    cover_regex = re.compile('.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
     no_matching_images = []
     for fileinfo in epub.filelist:
-        filename = os.path.basename(fileinfo.filename)
         if cover_regex.match(fileinfo.filename):
-            return fileinfo.filename # send full path
-        if img_ext_regex.match(filename):
+            return fileinfo.filename
+        if img_ext_regex.match(fileinfo.filename):
             no_matching_images.append(fileinfo)
     return _choose_best_image(no_matching_images)
 
