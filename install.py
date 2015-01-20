@@ -1,10 +1,8 @@
-import os
-import sys
-import getopt
-import shutil
-
 import argparse
-
+import getopt
+import os
+import shutil
+import sys
 
 source_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'src')
 install_dir = '/usr/bin/'
@@ -14,8 +12,6 @@ def copy(src, dst):
     """Copy file <src> to <dst>, creating all necessary dirs in between
     """
     try:
-        print src
-        print dst
         assert os.path.isfile(src)
         assert not os.path.isdir(dst)
         if not os.path.isdir(os.path.dirname(dst)):
