@@ -1,8 +1,11 @@
 import argparse
 import getopt
 import os
+import re
 import shutil
 import sys
+
+from collections import Counter
 
 source_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'src')
 install_dir = '/usr/bin/'
@@ -47,19 +50,28 @@ def check_dependencies():
     print
 
 
+def gnome_shell_version():
+    version = os.popen('gnome-session --version').read().split(' ')
+    major_version = version[1][0]
+    return ('gnome%s' % major_version) if major_version in set(['2','3']) else None
+
+VERSION_GUSSERS = {
+    'mate': lambda: 'gnome3',
+    'gnome': gnome_shell_version
+}
+KNOWN_DE = '|'.join(VERSION_GUSSERS.keys())
+
 def check_gnome_version():
     """
     Checks for the installed gnome version
     returns: 'gnome2' or 'gnome3'
     """
-    stdout = os.popen('apt-cache show gnome-shell | grep Version')
-    version = stdout.read().split()[1]
-    if version[0] == '3':
-        return 'gnome3'
-    elif version[0] == '2':
-        return 'gnome2'
-    else:
-        return None
+    value = os.popen('ps -A | egrep -i "%s"' % KNOWN_DE).read()  # TODO: What about cinnamon and others?
+    counter = Counter(re.findall(r'(%s)' %KNOWN_DE, value))
+    if counter:
+        desktop_environment = counter.most_common(1)[0][0]
+        return VERSION_GUSSERS.get(desktop_environment, lambda: None)()
+    return None
 
 
 def install():
