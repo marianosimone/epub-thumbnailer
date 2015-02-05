@@ -19,13 +19,14 @@
 # Description: An implementation of a cover thumbnailer for epub files
 # Installation: see README
 
-import zipfile
-import sys
-import Image
 import os
 import re
-from xml.dom import minidom
 from StringIO import StringIO
+import sys
+from xml.dom import minidom
+import zipfile
+
+import Image
 
 
 img_ext_regex = re.compile('^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)

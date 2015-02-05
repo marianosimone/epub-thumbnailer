@@ -26,9 +26,8 @@ def copy(src, dst):
 
 
 def check_dependencies():
-    """Check for required and recommended dependencies."""
+    """Check for required dependencies."""
     required_found = True
-    recommended_found = True
     print 'Checking dependencies ...\n'
     print 'Required dependencies:'
     try:
@@ -67,7 +66,7 @@ def check_gnome_version():
     returns: 'gnome2' or 'gnome3'
     """
     value = os.popen('ps -A | egrep -i "%s"' % KNOWN_DE).read()  # TODO: What about cinnamon and others?
-    counter = Counter(re.findall(r'(%s)' %KNOWN_DE, value))
+    counter = Counter(re.findall(r'(%s)' % KNOWN_DE, value))
     if counter:
         desktop_environment = counter.most_common(1)[0][0]
         return VERSION_GUSSERS.get(desktop_environment, lambda: None)()
