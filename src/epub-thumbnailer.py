@@ -46,12 +46,19 @@ def get_cover_from_manifest(epub):
     rootfile = epub.open(rootfile_path)
     rootfile_root = minidom.parseString(rootfile.read())
 
+    # find possible cover in meta
+    cover_id = None
+    for meta in rootfile_root.getElementsByTagName("meta"):
+        if meta.getAttribute("name") == "cover":
+            cover_id = meta.getAttribute("content")
+            break
+
     # find the manifest element
     manifest = rootfile_root.getElementsByTagName("manifest")[0]
     for item in manifest.getElementsByTagName("item"):
         item_id = item.getAttribute("id")
         item_href = item.getAttribute("href")
-        if "cover" in item_id and img_ext_regex.match(item_href.lower()):
+        if ("cover" in item_id or item_id == cover_id) and img_ext_regex.match(item_href.lower()):
             cover_path = os.path.join(os.path.dirname(rootfile_path),
                                       item_href)
             return cover_path
