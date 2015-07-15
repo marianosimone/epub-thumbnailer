@@ -29,8 +29,8 @@ import zipfile
 import Image
 
 
-img_ext_regex = re.compile('^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)
-cover_regex = re.compile('.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
+img_ext_regex = re.compile(r'^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)
+cover_regex = re.compile(r'.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
 
 def get_cover_from_manifest(epub):
 
@@ -58,10 +58,8 @@ def get_cover_from_manifest(epub):
     for item in manifest.getElementsByTagName("item"):
         item_id = item.getAttribute("id")
         item_href = item.getAttribute("href")
-        if ("cover" in item_id or item_id == cover_id) and img_ext_regex.match(item_href.lower()):
-            cover_path = os.path.join(os.path.dirname(rootfile_path),
-                                      item_href)
-            return cover_path
+        if (item_id == cover_id) or ("cover" in item_id and img_ext_regex.match(item_href.lower())):
+            return os.path.join(os.path.dirname(rootfile_path), item_href)
 
     return None
 
