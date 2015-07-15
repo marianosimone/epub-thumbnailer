@@ -12,8 +12,7 @@ install_dir = '/usr/bin/'
 
 
 def copy(src, dst):
-    """Copy file <src> to <dst>, creating all necessary dirs in between
-    """
+    """Copy file <src> to <dst>, creating all necessary dirs in between"""
     try:
         assert os.path.isfile(src)
         assert not os.path.isdir(dst)
@@ -52,18 +51,19 @@ def check_dependencies():
 def gnome_shell_version():
     version = os.popen('gnome-session --version').read().split(' ')
     major_version = version[1][0]
-    return ('gnome%s' % major_version) if major_version in set(['2','3']) else None
+    return ('gnome%s' % major_version) if major_version in set(['2', '3']) else None
 
 VERSION_GUSSERS = {
     'mate': lambda: 'gnome3',
-    'gnome': gnome_shell_version
+    'gnome': gnome_shell_version,
+    'xfce4': lambda: 'xfce4',
 }
 KNOWN_DE = '|'.join(VERSION_GUSSERS.keys())
 
-def check_gnome_version():
+def check_desktop_env():
     """
     Checks for the installed gnome version
-    returns: 'gnome2' or 'gnome3'
+    returns: 'gnome2', 'gnome3' or 'xfce4'
     """
     value = os.popen('ps -A | egrep -i "%s"' % KNOWN_DE).read()  # TODO: What about cinnamon and others?
     counter = Counter(re.findall(r'(%s)' % KNOWN_DE, value))
@@ -82,9 +82,9 @@ def install():
     print 'Installing epub-thumbnailer to %s ...' % install_dir
     if copy(os.path.join(source_dir, 'epub-thumbnailer.py'), os.path.join(install_dir, 'epub-thumbnailer')):
         print 'OK'
-        version = check_gnome_version()
+        environment = check_desktop_env()
 
-        if version == 'gnome2':
+        if environment == 'gnome2':
             schema = os.path.join(source_dir, 'epub-thumbnailer.schemas')
             os.popen('GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source) '
                          'gconftool-2 --makefile-install-rule "%s" 2>/dev/null' %
@@ -92,7 +92,7 @@ def install():
             print '\nRegistered epub archive thumbnailer in gconf (if available).'
             print 'The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar'
             print 'You might have to restart the file manager for the thumbnaile to be activated.\n'
-        elif version == 'gnome3':
+        elif environment == 'gnome3' or environment == 'xfce4':
             print 'Installing thumbnailer hook in /usr/share/thumbnailers ...'
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
                 print 'OK'
@@ -100,7 +100,7 @@ def install():
                 print 'Could not install'
                 exit(1)
         else:
-            print '\nCould not determine your Gnome version. You can still use the thumbnailer script manually.'
+            print '\nCould not determine your desktop environment version. You can still use the thumbnailer script manually.'
             print ""
             print "For example:"
             print ""
@@ -114,9 +114,9 @@ def install():
 
 def uninstall():
     print 'Uninstalling epub-thumbnailer from', install_dir, '...'
-    version = check_gnome_version()
+    environment = check_desktop_env()
     os.remove(os.path.join(install_dir, 'epub-thumbnailer'))
-    if version == 'gnome3':
+    if environment == 'gnome3' or environment == 'xfce4':
         print 'Uninstalling epub.thumbnailer from /usr/share/thumbnailers/ ...'
         try:
             os.remove('/usr/share/thumbnailers/epub.thumbnailer')
