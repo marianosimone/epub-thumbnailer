@@ -13,7 +13,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Author: Mariano Simone (marianosimone@gmail.com)
+# Author: Mariano Simone (http://marianosimone.com)
 # Version: 1.0
 # Name: epub-thumbnailer
 # Description: An implementation of a cover thumbnailer for epub files
