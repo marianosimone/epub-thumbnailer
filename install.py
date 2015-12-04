@@ -27,25 +27,25 @@ def copy(src, dst):
 def check_dependencies():
     """Check for required dependencies."""
     required_found = True
-    print 'Checking dependencies ...\n'
-    print 'Required dependencies:'
+    print('Checking dependencies ...\n')
+    print('Required dependencies:')
     try:
         import Image
         assert Image.VERSION >= '1.1.5'
-        print '    Python Imaging Library ....... OK'
+        print('    Python Imaging Library ....... OK')
     except ImportError:
-        print '    !!! Python Imaging Library ... Not found'
+        print('    !!! Python Imaging Library ... Not found')
         required_found = False
     except AssertionError:
-        print '    !!! Python Imaging Library ... version', Image.VERSION,
-        print 'found'
-        print '    !!! Python Imaging Library 1.1.5 or higher is required'
+        print('    !!! Python Imaging Library ... version', Image.VERSION,)
+        print('found')
+        print('    !!! Python Imaging Library 1.1.5 or higher is required')
         required_found = False
     if not required_found:
-        print '\nCould not find all required dependencies!'
-        print 'Please install them and try again.'
+        print('\nCould not find all required dependencies!')
+        print('Please install them and try again.')
         sys.exit(1)
-    print
+    print('')
 
 
 def gnome_shell_version():
@@ -76,12 +76,12 @@ def check_desktop_env():
 def install():
     check_dependencies()
     if not os.access(install_dir, os.W_OK):
-        print 'You do not have write permissions to %s (maybe you need to sudo)' % install_dir
+        print('You do not have write permissions to %s (maybe you need to sudo)' % install_dir)
         sys.exit(1)
 
-    print 'Installing epub-thumbnailer to %s ...' % install_dir
+    print('Installing epub-thumbnailer to %s ...' % install_dir)
     if copy(os.path.join(source_dir, 'epub-thumbnailer.py'), os.path.join(install_dir, 'epub-thumbnailer')):
-        print 'OK'
+        print('OK')
         environment = check_desktop_env()
 
         if environment == 'gnome2':
@@ -89,40 +89,40 @@ def install():
             os.popen('GCONF_CONFIG_SOURCE=$(gconftool-2 --get-default-source) '
                          'gconftool-2 --makefile-install-rule "%s" 2>/dev/null' %
                             schema)
-            print '\nRegistered epub archive thumbnailer in gconf (if available).'
-            print 'The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar'
-            print 'You might have to restart the file manager for the thumbnaile to be activated.\n'
+            print('\nRegistered epub archive thumbnailer in gconf (if available).')
+            print('The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar')
+            print('You might have to restart the file manager for the thumbnaile to be activated.\n')
         elif environment == 'gnome3' or environment == 'xfce4':
-            print 'Installing thumbnailer hook in /usr/share/thumbnailers ...'
+            print('Installing thumbnailer hook in /usr/share/thumbnailers ...')
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
-                print 'OK'
+                print('OK')
             else:
-                print 'Could not install'
+                print('Could not install')
                 exit(1)
         else:
-            print '\nCould not determine your desktop environment version. You can still use the thumbnailer script manually.'
-            print ""
-            print "For example:"
-            print ""
-            print "    epub-thumbnailer Lawrence\ Lessig\ -\ Free\ Culture.epub cover.png 128"
+            print('\nCould not determine your desktop environment version. You can still use the thumbnailer script manually.')
+            print('')
+            print('For example:')
+            print('')
+            print('    epub-thumbnailer Lawrence\ Lessig\ -\ Free\ Culture.epub cover.png 128')
             exit(1)
     else:
-        print 'Could not install'
+        print('Could not install')
         exit(1)
 
-    print 'You might have to restart your file manager for the thumbnailer to be activated.\n'
+    print('You might have to restart your file manager for the thumbnailer to be activated.\n')
 
 def uninstall():
-    print 'Uninstalling epub-thumbnailer from', install_dir, '...'
+    print('Uninstalling epub-thumbnailer from', install_dir, '...')
     environment = check_desktop_env()
     os.remove(os.path.join(install_dir, 'epub-thumbnailer'))
     if environment == 'gnome3' or environment == 'xfce4':
-        print 'Uninstalling epub.thumbnailer from /usr/share/thumbnailers/ ...'
+        print('Uninstalling epub.thumbnailer from /usr/share/thumbnailers/ ...')
         try:
             os.remove('/usr/share/thumbnailers/epub.thumbnailer')
-            print 'OK'
+            print('OK')
         except:
-            print("Could not remove /usr/share/thumbnailers/epub.thumbnailer")
+            print('Could not remove /usr/share/thumbnailers/epub.thumbnailer')
 
 
 commands = {

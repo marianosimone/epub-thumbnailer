@@ -106,6 +106,6 @@ for strategy in extraction_strategies:
         if extract_cover(cover_path):
             exit(0)
     except Exception as ex:
-        print "Error getting cover using %s: " % strategy.__name__, ex
+        print("Error getting cover using %s: " % strategy.__name__, ex)
 
 exit(1)
