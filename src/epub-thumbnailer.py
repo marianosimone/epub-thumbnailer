@@ -26,8 +26,10 @@ import sys
 from xml.dom import minidom
 import zipfile
 
-import Image
-
+try:
+    from PIL import Image
+except ImportError:
+    import Image
 
 img_ext_regex = re.compile(r'^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)
 cover_regex = re.compile(r'.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)

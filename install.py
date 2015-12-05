@@ -29,18 +29,25 @@ def check_dependencies():
     required_found = True
     print('Checking dependencies ...\n')
     print('Required dependencies:')
+
+    print('    Python Imaging Library .......')
     try:
-        import Image
-        assert Image.VERSION >= '1.1.5'
-        print('    Python Imaging Library ....... OK')
+        from PIL import Image
+        print('OK')
     except ImportError:
-        print('    !!! Python Imaging Library ... Not found')
         required_found = False
-    except AssertionError:
-        print('    !!! Python Imaging Library ... version', Image.VERSION,)
-        print('found')
-        print('    !!! Python Imaging Library 1.1.5 or higher is required')
-        required_found = False
+        try:
+            import Image
+            assert Image.VERSION >= '1.1.5'
+            required_found = True
+        except AssertionError:
+            print('    !!! version ' + Image.VERSION + ' found, but 1.1.5 or higher is required')
+            required_found = False
+        except ImportError:
+            pass
+        finally:
+            if not required_found:
+                print('    ... Not found')
     if not required_found:
         print('\nCould not find all required dependencies!')
         print('Please install them and try again.')
