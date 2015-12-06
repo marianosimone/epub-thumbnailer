@@ -21,11 +21,10 @@
 
 import os
 import re
-from StringIO import StringIO
+from io import BytesIO
 import sys
 from xml.dom import minidom
 import zipfile
-
 try:
     from PIL import Image
 except ImportError:
@@ -82,7 +81,7 @@ def _choose_best_image(images):
 def extract_cover(cover_path):
     if cover_path:
         cover = epub.open(cover_path)
-        im = Image.open(StringIO(cover.read()))
+        im = Image.open(BytesIO(cover.read()))
         im.thumbnail((size, size), Image.ANTIALIAS)
         if im.mode == "CMYK":
             im = im.convert("RGB")
