@@ -1,5 +1,4 @@
 import argparse
-import getopt
 import os
 import re
 import shutil
@@ -54,10 +53,14 @@ def check_dependencies():
         sys.exit(1)
     print('')
 
-
+MAJOR_VERSION_EXTRACTOR = re.compile(r'.* (\d*)\..*')
 def gnome_shell_version():
-    version = os.popen('gnome-session --version').read().split(' ')
-    major_version = version[1][0]
+    major_version = None
+    gnome_session_match = MAJOR_VERSION_EXTRACTOR.search(os.popen('gnome-session --version').read())  # output is "gnome-session X.Y.Z"
+    major_version = gnome_session_match and gnome_session_match.group(1)
+    if not major_version:
+        gnome_shell_match = MAJOR_VERSION_EXTRACTOR.search(os.popen('gnome-shell --version').read())  # output is "GNOME Shell X.Y.Z"
+        major_version = gnome_shell_match and gnome_shell_match.group(1)
     return ('gnome%s' % major_version) if major_version in set(['2', '3']) else None
 
 VERSION_GUSSERS = {
