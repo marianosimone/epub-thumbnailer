@@ -102,7 +102,7 @@ def install():
                             schema)
             print('\nRegistered epub archive thumbnailer in gconf (if available).')
             print('The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar')
-            print('You might have to restart the file manager for the thumbnaile to be activated.\n')
+            print('You might have to restart the file manager for the thumbnailer to be activated.\n')
         elif environment in ('gnome3', 'xfce4', 'unity'):
             print('Installing thumbnailer hook in /usr/share/thumbnailers ...')
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
@@ -127,7 +127,7 @@ def uninstall():
     print('Uninstalling epub-thumbnailer from', install_dir, '...')
     environment = check_desktop_env()
     os.remove(os.path.join(install_dir, 'epub-thumbnailer'))
-    if environment == 'gnome3' or environment == 'xfce4':
+    if environment in ('gnome3', 'xfce4', 'unity'):
         print('Uninstalling epub.thumbnailer from /usr/share/thumbnailers/ ...')
         try:
             os.remove('/usr/share/thumbnailers/epub.thumbnailer')
