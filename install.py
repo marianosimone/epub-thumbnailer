@@ -67,16 +67,20 @@ VERSION_GUSSERS = {
     'mate': lambda: 'gnome3',
     'gnome': gnome_shell_version,
     'xfce4': lambda: 'xfce4',
-    'unity': lambda: 'unity'
+    'unity': lambda: 'unity',
+    'openbox': lambda: 'openbox',
 }
 KNOWN_DE = '|'.join(VERSION_GUSSERS.keys())
 
 def check_desktop_env():
     """
-    Checks for the installed gnome version
-    returns: 'gnome2', 'gnome3' or 'xfce4'
+    Tries to guess the installed desktop environment. This is kind of heuristic and might (and most likely will)
+    fail
+    returns: Things like 'gnome2', 'gnome3', 'xfce4', 'openbox' or None
     """
-    value = os.popen('ps -A | egrep -i "%s"' % KNOWN_DE).read()  # TODO: What about cinnamon and others?
+    value = os.popen("ps -A | grep --extended-regexp --ignore-case '(%s)$'" % KNOWN_DE).read()
+    if not value:
+        value = os.popen("ps -A | grep --extended-regexp --ignore-case '%s'" % KNOWN_DE).read()
     counter = Counter(re.findall(r'(%s)' % KNOWN_DE, value))
     if counter:
         desktop_environment = counter.most_common(1)[0][0]
@@ -103,7 +107,7 @@ def install():
             print('\nRegistered epub archive thumbnailer in gconf (if available).')
             print('The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar')
             print('You might have to restart the file manager for the thumbnailer to be activated.\n')
-        elif environment in ('gnome3', 'xfce4', 'unity'):
+        elif environment in ('gnome3', 'xfce4', 'unity', 'openbox'):
             print('Installing thumbnailer hook in /usr/share/thumbnailers ...')
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
                 print('OK')
@@ -116,6 +120,9 @@ def install():
             print('For example:')
             print('')
             print('    epub-thumbnailer Lawrence\ Lessig\ -\ Free\ Culture.epub cover.png 128')
+            print('')
+            print('Also, please consider reporting this in https://github.com/marianosimone/epub-thumbnailer/')
+            print('including information about your distribution, window manager, file manager and the result of `ps -A`')
             exit(1)
     else:
         print('Could not install')
