@@ -69,6 +69,7 @@ VERSION_GUSSERS = {
     'xfce4': lambda: 'xfce4',
     'unity': lambda: 'unity',
     'openbox': lambda: 'openbox',
+    'enlightenment': lambda: 'enlightenment',
 }
 KNOWN_DE = '|'.join(VERSION_GUSSERS.keys())
 
@@ -107,7 +108,7 @@ def install():
             print('\nRegistered epub archive thumbnailer in gconf (if available).')
             print('The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar')
             print('You might have to restart the file manager for the thumbnailer to be activated.\n')
-        elif environment in ('gnome3', 'xfce4', 'unity', 'openbox'):
+        elif environment in ('gnome3', 'xfce4', 'unity', 'openbox', 'enlightenment'):
             print('Installing thumbnailer hook in /usr/share/thumbnailers ...')
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
                 print('OK')
