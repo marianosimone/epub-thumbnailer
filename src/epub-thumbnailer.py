@@ -60,8 +60,9 @@ def get_cover_from_manifest(epub):
     manifest = rootfile_root.getElementsByTagName("manifest")[0]
     for item in manifest.getElementsByTagName("item"):
         item_id = item.getAttribute("id")
+        item_properties = item.getAttribute("properties")
         item_href = item.getAttribute("href")
-        if (item_id == cover_id) or ("cover" in item_id and img_ext_regex.match(item_href.lower())):
+        if (item_id == cover_id) or (item_properties == cover_id) or ("cover" in item_id and img_ext_regex.match(item_href.lower())):
             return os.path.join(os.path.dirname(rootfile_path), item_href)
 
     return None
