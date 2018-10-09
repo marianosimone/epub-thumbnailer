@@ -108,7 +108,18 @@ def install():
                             schema)
             print('\nRegistered epub archive thumbnailer in gconf (if available).')
             print('The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar')
-            print('You might have to restart the file manager for the thumbnailer to be activated.\n')
+            print('You might have to restart the file manager for the thumbnailer to be activated.\n\n')
+            print('If you are using Thunar, you\'ll need to add the following to `/etc/xdg/tumbler/tumbler.rc`:')
+            print(
+                """
+# Ebook thumbnailer
+[EbookThumbnailer]
+Disabled=false
+Priority=1
+Locations=
+MaxFileSize=0
+                """
+            )
         elif environment in ('gnome3', 'xfce4', 'unity', 'openbox', 'enlightenment', 'i3'):
             print('Installing thumbnailer hook in /usr/share/thumbnailers ...')
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
