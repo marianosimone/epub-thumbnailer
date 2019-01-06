@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import sys
+import mmap
 
 from collections import Counter
 
@@ -90,6 +91,26 @@ def check_desktop_env():
     return None
 
 
+def check_tumbler():
+    return os.path.isfile('/etc/xdg/tumbler/tumbler.rc')
+
+
+def add_thumbnailer_to_tumbler():
+    with(open('/etc/xdg/tumbler/tumbler.rc', 'a+')) as tumbler_config:
+        config_content = mmap.mmap(tumbler_config.fileno(), 0, access=mmap.ACCESS_READ)
+        if config_content.find('# Ebook thumbnailer') == -1:
+            tumbler_config.write('\n')
+            tumbler_config.write('# Ebook thumbnailer\n')
+            tumbler_config.write('[EbookThumbnailer]\n')
+            tumbler_config.write('Disabled=false\n')
+            tumbler_config.write('Priority=1\n')
+            tumbler_config.write('Locations=\n')
+            tumbler_config.write('MaxFileSize=0\n')
+            print('Registered thumbnailer in tumbler.rc')
+        else:
+            print('Thumbnailer already present in tumbler.rc')
+
+
 def install():
     check_dependencies()
     if not os.access(install_dir, os.W_OK):
@@ -108,18 +129,7 @@ def install():
                             schema)
             print('\nRegistered epub archive thumbnailer in gconf (if available).')
             print('The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar')
-            print('You might have to restart the file manager for the thumbnailer to be activated.\n\n')
-            print('If you are using Thunar, you\'ll need to add the following to `/etc/xdg/tumbler/tumbler.rc`:')
-            print(
-                """
-# Ebook thumbnailer
-[EbookThumbnailer]
-Disabled=false
-Priority=1
-Locations=
-MaxFileSize=0
-                """
-            )
+            print('You might have to restart the file manager for the thumbnailer to be activated.\n')
         elif environment in ('gnome3', 'xfce4', 'unity', 'openbox', 'enlightenment', 'i3'):
             print('Installing thumbnailer hook in /usr/share/thumbnailers ...')
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
@@ -140,6 +150,10 @@ MaxFileSize=0
     else:
         print('Could not install')
         exit(1)
+
+    uses_tumbler = check_tumbler()
+    if uses_tumbler:
+        add_thumbnailer_to_tumbler()
 
     print('You might have to restart your file manager for the thumbnailer to be activated.\n')
 
