@@ -62,7 +62,10 @@ def get_cover_from_manifest(epub):
         item_id = item.getAttribute("id")
         item_properties = item.getAttribute("properties")
         item_href = item.getAttribute("href")
-        if (item_id == cover_id) or (item_properties == cover_id) or ("cover" in item_id and img_ext_regex.match(item_href.lower())):
+        item_href_is_image = img_ext_regex.match(item_href.lower())
+        item_id_might_be_cover = item_id == cover_id or ('cover' in item_id and item_href_is_image)
+        item_properties_might_be_cover = item_properties == cover_id or ('cover' in item_properties and item_href_is_image)
+        if item_id_might_be_cover or item_properties_might_be_cover:
             return os.path.join(os.path.dirname(rootfile_path), item_href)
 
     return None
