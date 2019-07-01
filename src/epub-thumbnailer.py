@@ -24,8 +24,7 @@ import re
 from io import BytesIO
 import sys
 from xml.dom import minidom
-from StringIO import StringIO
-import urllib
+
 import zipfile
 try:
     from PIL import Image
@@ -102,18 +101,16 @@ output_file = sys.argv[2]
 # Required size?
 size = int(sys.argv[3])
 
-# An epub is just a zip
-file_url = urllib.urlopen(input_file)
-epub = zipfile.ZipFile(StringIO(file_url.read()), "r")
-
 extraction_strategies = [get_cover_from_manifest, get_cover_by_filename]
 
-for strategy in extraction_strategies:
-    try:
-        cover_path = strategy(epub)
-        if extract_cover(cover_path):
-            exit(0)
-    except Exception as ex:
-        print("Error getting cover using %s: " % strategy.__name__, ex)
+# An epub is just a zip
+with zipfile.ZipFile(input_file, "r") as epub:
+    for strategy in extraction_strategies:
+        try:
+            cover_path = strategy(epub)
+            if extract_cover(cover_path):
+                exit(0)
+        except Exception as ex:
+            print("Error getting cover using %s: " % strategy.__name__, ex)
 
-exit(1)
+    exit(1)
