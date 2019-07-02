@@ -35,4 +35,5 @@ This will look into the **epub_file** to find its cover, and will save a **size*
 - [Pablo Jorge](https://github.com/pablojorge): Added manifest-based cover detection
 - [Renato Ramonda](https://github.com/renatoram): Added gnome3 thumbnailer support
 - [xtrymind](https://github.com/xtrymind): Added tumbler configuration
+- [Alex Chan](https://github.com/alexwlchan): Added Python 3 support
 - A [couple](http://ubuntuforums.org/showthread.php?t=278162) of [forum](http://ubuntuforums.org/showthread.php?t=1046678) [topics](http://library.gnome.org/devel/integration-guide/stable/thumbnailer.html.en) where I learned about the matter
