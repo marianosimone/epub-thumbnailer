@@ -98,7 +98,7 @@ def check_tumbler():
 def add_thumbnailer_to_tumbler():
     with(open('/etc/xdg/tumbler/tumbler.rc', 'a+')) as tumbler_config:
         config_content = mmap.mmap(tumbler_config.fileno(), 0, access=mmap.ACCESS_READ)
-        if config_content.find('# Ebook thumbnailer') == -1:
+        if config_content.find(b'# Ebook thumbnailer') == -1:
             tumbler_config.write('\n')
             tumbler_config.write('# Ebook thumbnailer\n')
             tumbler_config.write('[EbookThumbnailer]\n')
