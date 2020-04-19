@@ -12,6 +12,12 @@ to this:
 
 # How to install?
 
+### Requirement
+
+ - [Pillow](https://python-pillow.org/)
+
+install it with `pip install Pillow` or with package manager from your distro
+
 Run the installer!
 
     sudo python install.py install
