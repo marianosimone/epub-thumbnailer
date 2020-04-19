@@ -38,10 +38,10 @@ def check_dependencies():
         required_found = False
         try:
             import Image
-            assert Image.VERSION >= '1.1.5'
+            assert Image.__version__ >= '1.1.5'
             required_found = True
         except AssertionError:
-            print('    !!! version ' + Image.VERSION + ' found, but 1.1.5 or higher is required')
+            print('    !!! version ' + Image.__version__ + ' found, but 1.1.5 or higher is required')
             required_found = False
         except ImportError:
             pass
