@@ -72,6 +72,7 @@ VERSION_GUSSERS = {
     'openbox': lambda: 'openbox',
     'enlightenment': lambda: 'enlightenment',
     'i3': lambda: 'i3',
+    'cinnamon': lambda: 'gnome3'
 }
 KNOWN_DE = '|'.join(VERSION_GUSSERS.keys())
 
