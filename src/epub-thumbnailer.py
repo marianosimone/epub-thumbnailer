@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -74,6 +74,33 @@ def get_cover_from_manifest(epub):
 
     return None
 
+def get_cover_by_guide(epub):
+
+    # open the main container
+    container = epub.open("META-INF/container.xml")
+    container_root = minidom.parseString(container.read())
+
+    # locate the rootfile
+    elem = container_root.getElementsByTagName("rootfile")[0]
+    rootfile_path = elem.getAttribute("full-path")
+
+    # open the rootfile
+    rootfile = epub.open(rootfile_path)
+    rootfile_root = minidom.parseString(rootfile.read())
+    for ref in rootfile_root.getElementsByTagName("reference"):
+        if ref.getAttribute("type") == "cover":
+            cover_href = ref.getAttribute("href")
+            cover_file_path = os.path.join(os.path.dirname(rootfile_path), cover_href)
+
+            # is html
+            cover_file = epub.open(cover_file_path)
+            cover_dom = minidom.parseString(cover_file.read())
+            imgs = cover_dom.getElementsByTagName("img")
+            if imgs:
+                img = imgs[0]
+                img_path = img.getAttribute("src")
+                return os.path.relpath(os.path.join(os.path.dirname(cover_file_path), img_path))
+    return None
 def get_cover_by_filename(epub):
     no_matching_images = []
     for fileinfo in epub.filelist:
@@ -114,7 +141,7 @@ else:
 
 epub = zipfile.ZipFile(BytesIO(file_url.read()), "r")
 
-extraction_strategies = [get_cover_from_manifest, get_cover_by_filename]
+extraction_strategies = [get_cover_from_manifest, get_cover_by_guide, get_cover_by_filename]
 
 for strategy in extraction_strategies:
     try:
