@@ -14,7 +14,7 @@ to this:
 
 ### Requirement
 
- - [Pillow](https://python-pillow.org/)
+ - [Pillow](https://python-pillow.org/) (see [installation instructions](https://pillow.readthedocs.io/en/stable/installation.html))
 
 install it with `pip install Pillow` or with package manager from your distro
 
