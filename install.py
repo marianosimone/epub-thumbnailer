@@ -63,18 +63,19 @@ def gnome_shell_version():
     if not major_version:
         gnome_shell_match = MAJOR_VERSION_EXTRACTOR.search(os.popen('gnome-shell --version').read())  # output is "GNOME Shell X.Y.Z"
         major_version = gnome_shell_match and gnome_shell_match.group(1)
-    return ('gnome%s' % major_version) if major_version in set(['2', '3']) else None
+    return ('gnome%s' % major_version) if major_version else None
 
 VERSION_GUSSERS = {
-    'mate': lambda: 'gnome3',
-    'gnome': gnome_shell_version,
-    'xfce4': lambda: 'xfce4',
-    'unity': lambda: 'unity',
-    'openbox': lambda: 'openbox',
-    'enlightenment': lambda: 'enlightenment',
-    'i3': lambda: 'i3',
     'cinnamon': lambda: 'gnome3',
-    'pantheon': lambda: 'pantheon'
+    'enlightenment': lambda: 'enlightenment',
+    'gnome': gnome_shell_version,
+    'gnome-shell': gnome_shell_version,
+    'i3': lambda: 'i3',
+    'mate': lambda: 'gnome3',
+    'openbox': lambda: 'openbox',
+    'pantheon': lambda: 'pantheon',
+    'unity': lambda: 'unity',
+    'xfce4': lambda: 'xfce4',
 }
 KNOWN_DE = '|'.join(VERSION_GUSSERS.keys())
 
@@ -133,7 +134,7 @@ def install():
             print('\nRegistered epub archive thumbnailer in gconf (if available).')
             print('The thumbnailer is only supported by some file managers, such as Nautilus, Caja and Thunar')
             print('You might have to restart the file manager for the thumbnailer to be activated.\n')
-        elif environment in ('gnome3', 'xfce4', 'unity', 'openbox', 'enlightenment', 'i3', 'pantheon'):
+        elif environment is not None:
             print('Installing thumbnailer hook in /usr/share/thumbnailers ...')
             if copy(os.path.join(source_dir, 'epub.thumbnailer'), '/usr/share/thumbnailers/epub.thumbnailer'):
                 print('OK')
