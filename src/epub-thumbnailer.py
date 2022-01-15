@@ -40,18 +40,7 @@ img_ext_regex = re.compile(r'^.*\.(jpg|jpeg|png)$', flags=re.IGNORECASE)
 cover_regex = re.compile(r'.*cover.*\.(jpg|jpeg|png)', flags=re.IGNORECASE)
 
 def get_cover_from_manifest(epub):
-
-    # open the main container
-    container = epub.open("META-INF/container.xml")
-    container_root = minidom.parseString(container.read())
-
-    # locate the rootfile
-    elem = container_root.getElementsByTagName("rootfile")[0]
-    rootfile_path = elem.getAttribute("full-path")
-
-    # open the rootfile
-    rootfile = epub.open(rootfile_path)
-    rootfile_root = minidom.parseString(rootfile.read())
+    rootfile_path, rootfile_root = _get_rootfile_root(epub)
 
     # find possible cover in meta
     cover_id = None
@@ -75,18 +64,8 @@ def get_cover_from_manifest(epub):
     return None
 
 def get_cover_by_guide(epub):
+    rootfile_path, rootfile_root = _get_rootfile_root(epub)
 
-    # open the main container
-    container = epub.open("META-INF/container.xml")
-    container_root = minidom.parseString(container.read())
-
-    # locate the rootfile
-    elem = container_root.getElementsByTagName("rootfile")[0]
-    rootfile_path = elem.getAttribute("full-path")
-
-    # open the rootfile
-    rootfile = epub.open(rootfile_path)
-    rootfile_root = minidom.parseString(rootfile.read())
     for ref in rootfile_root.getElementsByTagName("reference"):
         if ref.getAttribute("type") == "cover":
             cover_href = ref.getAttribute("href")
@@ -101,6 +80,20 @@ def get_cover_by_guide(epub):
                 img_path = img.getAttribute("src")
                 return os.path.relpath(os.path.join(os.path.dirname(cover_file_path), img_path))
     return None
+
+def _get_rootfile_root(epub):
+    # open the main container
+    container = epub.open("META-INF/container.xml")
+    container_root = minidom.parseString(container.read())
+
+    # locate the rootfile
+    elem = container_root.getElementsByTagName("rootfile")[0]
+    rootfile_path = elem.getAttribute("full-path")
+
+    # open the rootfile
+    rootfile = epub.open(rootfile_path)
+    return rootfile_path, minidom.parseString(rootfile.read())
+
 def get_cover_by_filename(epub):
     no_matching_images = []
     for fileinfo in epub.filelist:
