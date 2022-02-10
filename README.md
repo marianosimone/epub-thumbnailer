@@ -20,7 +20,7 @@ install it with `pip install Pillow` or with package manager from your distro
 
 Run the installer!
 
-    sudo python install.py install
+    sudo python3 install.py install
 
 Basically, it moves the thumbnailer script to /usr/bin and installs the necessary hooks:
 
