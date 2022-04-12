@@ -76,6 +76,7 @@ VERSION_GUSSERS = {
     'pantheon': lambda: 'pantheon',
     'unity': lambda: 'unity',
     'xfce4': lambda: 'xfce4',
+    'plasmashell': lambda: 'kde',
 }
 KNOWN_DE = '|'.join(VERSION_GUSSERS.keys())
 
