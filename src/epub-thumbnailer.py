@@ -119,12 +119,20 @@ def extract_cover(cover_path):
         return True
     return False
 
+if len(sys.argv) != 4:
+    print("Usage: epub-thumbnailer.py <input-epub> <output-png> <size>", file=sys.stderr)
+    sys.exit(2)
+
 # Which file are we working with?
 input_file = sys.argv[1]
 # Where do does the file have to be saved?
 output_file = sys.argv[2]
 # Required size?
-size = int(sys.argv[3])
+try:
+    size = int(sys.argv[3])
+except ValueError:
+    print("Error: size must be an integer, got %r" % (sys.argv[3],), file=sys.stderr)
+    sys.exit(2)
 
 # An epub is just a zip
 if os.path.isfile(input_file):
